@@ -9,6 +9,12 @@ class DataMiner
     # @see DataMiner::ActiveRecordClassMethods#data_miner Overview of how to define data miner scripts inside of ActiveRecord models.
     # @see DataMiner::Script#tap Creating a tap step by calling DataMiner::Script#tap from inside a data miner script
     class Tap < Step
+      class DatabaseNameError < ArgumentError
+        def message
+          %{[data_miner] Can't infer database name from options or ActiveRecord config.}
+        end
+      end
+
       DEFAULT_PORTS = {
         :mysql => 3306,
         :mysql2 => 3306,
@@ -73,7 +79,7 @@ class DataMiner
       # @return [String] The name of the current database.
       def database
         unless database = database_options[:database]
-          raise ::ArgumentError, %{[data_miner] Can't infer database name from options or ActiveRecord config.}
+          fail DatabaseNameError
         end
         database
       end

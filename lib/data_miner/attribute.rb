@@ -7,6 +7,27 @@ class DataMiner
   # @see DataMiner::Step::Import#store Telling an import step to store a column with DataMiner::Step::Import#store
   # @see DataMiner::Step::Import#key Telling an import step to key on a column with DataMiner::Step::Import#key
   class Attribute
+    class InvalidOptionsError < ArgumentError
+      def initialize(attribute, errors)
+        @attribute = attribute.inspect
+        @errors = errors
+      end
+
+      def message
+        %{[data_miner] Errors on #{@attribute}: #{@errors.join(';')}}
+      end
+    end
+    class MissingUnitsError < RuntimeError
+      def initialize(from, to)
+        @from = from
+        @to = to
+      end
+
+      def message
+        "[data_miner] Missing units (from=#{from}, to=#{to}"
+      end
+    end
+
     class << self
       # @private
       def check_options(options)
@@ -154,7 +175,7 @@ class DataMiner
     def initialize(step, name, options = {})
       options = options.symbolize_keys
       if (errors = Attribute.check_options(options)).any?
-        raise ::ArgumentError, %{[data_miner] Errors on #{inspect}: #{errors.join(';')}}
+        fail InvalidOptionsError, errors
       end
       @step = step
       @name = name.to_sym
@@ -263,7 +284,7 @@ class DataMiner
         final_from_units = from_units || read_units(row)
         final_to_units = to_units || read_units(row)
         if final_from_units.blank? or final_to_units.blank?
-          raise ::RuntimeError, "[data_miner] Missing units (from=#{final_from_units.inspect}, to=#{final_to_units.inspect}"
+          fail MissingUnitsError, final_from_units.inspect, final_to_units.inspect
         end
         value = value.to_f.convert final_from_units, final_to_units
       end

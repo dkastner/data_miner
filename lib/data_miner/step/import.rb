@@ -11,6 +11,18 @@ class DataMiner
     # @see DataMiner::Script#import Creating an import step by calling DataMiner::Script#import from inside a data miner script
     # @see DataMiner::Attribute The Attribute class, which maps local columns and remote data fields from within an import step
     class Import < Step
+      class InvalidSettingError < ArgumentError; end
+      class DuplicateColumnError < StandardError
+        def initialize(model, attribute)
+          @model = model
+          @attribute = attribute
+        end
+
+        def message
+          "You should only call store or key once for #{@model.name}##{@attribute}"
+        end
+      end
+
       # The mappings of local columns to remote data source fields.
       # @return [Array<DataMiner::Attribute>]
       attr_reader :attributes
@@ -26,10 +38,10 @@ class DataMiner
       def initialize(script, description, table_and_errata_settings, &blk)
         table_and_errata_settings = table_and_errata_settings.symbolize_keys
         if table_and_errata_settings.has_key?(:table)
-          raise ::ArgumentError, %{[data_miner] :table is no longer an allowed setting.}
+          raise InvalidSettingError, %{[data_miner] :table is no longer an allowed setting.}
         end
         if (errata_settings = table_and_errata_settings[:errata]) and not errata_settings.is_a?(::Hash)
-          raise ::ArgumentError, %{[data_miner] :errata must be a hash of initialization settings to Errata}
+          raise InvalidSettingError, %{[data_miner] :errata must be a hash of initialization settings to Errata}
         end
         @script = script
         @attributes = ::ActiveSupport::OrderedHash.new
@@ -57,7 +69,7 @@ class DataMiner
       def store(attr_name, attr_options = {})
         attr_name = attr_name.to_sym
         if attributes.has_key? attr_name
-          raise "You should only call store or key once for #{model.name}##{attr_name}"
+          fail DuplicateColumnError, model, attr_name
         end
         attributes[attr_name] = DataMiner::Attribute.new self, attr_name, attr_options
       end
@@ -76,7 +88,7 @@ class DataMiner
       def key(attr_name, attr_options = {})
         attr_name = attr_name.to_sym
         if attributes.has_key? attr_name
-          raise "You should only call store or key once for #{model.name}##{attr_name}"
+          fail DuplicateColumnError, model, attr_name
         end
         @key = attr_name
         store attr_name, attr_options

@@ -95,10 +95,10 @@ class DataMiner
         succeed!
       rescue Skip
         skip!
-      rescue
-        self.error = "#{$!.message}\n#{$!.backtrace.join("\n")}"
+      rescue => error
+        self.error = "#{error.message}\n#{error.backtrace.join("\n")}"
         fail!
-        raise $!
+        raise error
       ensure
         self.row_count_after = model.count
         if DataMiner.per_column_statistics?
