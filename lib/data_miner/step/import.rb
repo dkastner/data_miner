@@ -71,7 +71,7 @@ class DataMiner
         if attributes.has_key? attr_name
           fail DuplicateColumnError, model, attr_name
         end
-        attributes[attr_name] = DataMiner::Attribute.new self, attr_name, attr_options
+        attributes[attr_name] = DataMiner::Attribute.create(attr_name, attr_options)
       end
 
       # Store data into a model column AND use it as the key.

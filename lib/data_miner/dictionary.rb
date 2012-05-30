@@ -74,9 +74,9 @@ class DataMiner
         end
         str = sprintf % str
       end
-      str = DataMiner.compress_whitespace str
+      str = DataMiner::Utility.compress_whitespace str
       unless case_sensitive
-        str = DataMiner.downcase str
+        str = DataMiner::Utility.downcase str
       end
       str
     end

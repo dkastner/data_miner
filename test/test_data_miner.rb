@@ -82,6 +82,8 @@ describe DataMiner do
     end
     it "doesn't nullify string columns by default" do
       Pet.run_data_miner!
+      p = Pet.find('Amigo')
+      puts p.inspect
       Pet.find('Amigo').command_phrase.must_equal ''
       Pet.find('Johnny').command_phrase.must_equal ''
     end

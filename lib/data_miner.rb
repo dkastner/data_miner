@@ -22,6 +22,7 @@ require 'data_miner/step'
 require 'data_miner/step/import'
 require 'data_miner/step/tap'
 require 'data_miner/step/process'
+require 'data_miner/utility'
 require 'data_miner/run'
 
 # A singleton class that holds global configuration for data mining.
@@ -30,25 +31,6 @@ require 'data_miner/run'
 #
 # @see DataMiner::ActiveRecordClassMethods#data_miner Overview of how to define data miner scripts inside of ActiveRecord models.
 class DataMiner
-  class << self
-    # @private
-    def downcase(str)
-      defined?(::UnicodeUtils) ? ::UnicodeUtils.downcase(str) : str.downcase
-    end
-
-    # @private
-    def upcase(str)
-      defined?(::UnicodeUtils) ? ::UnicodeUtils.upcase(str) : str.upcase
-    end
-
-    # @private
-    def compress_whitespace(str)
-      str.gsub(INNER_SPACE, ' ').strip
-    end
-  end
-
-  INNER_SPACE = /[ ]+/
-
   include ::Singleton
 
   attr_writer :logger
