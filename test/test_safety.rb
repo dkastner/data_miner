@@ -2,13 +2,13 @@
 require 'helper'
 init_database
 init_models
+
+# use earth, which has a plethora of real-world data_miner blocks
 require 'earth'
+require 'earth/pet/breed'
 
 require 'lock_method'
 DataMiner::Run.lock_method :start
-
-# use earth, which has a plethora of real-world data_miner blocks
-Earth.init :locality, :pet, :load_data_miner => true, :apply_schemas => true
 
 describe DataMiner do
   describe "when being run in a multi-threaded environment" do

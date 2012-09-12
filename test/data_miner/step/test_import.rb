@@ -1,8 +1,10 @@
 require 'helper'
 init_database
-require 'earth'
 
-Earth.init :residence, :electricity, :hospitality, :load_data_miner => true, :apply_schemas => true
+require 'earth'
+require 'earth/electricity/electric_utility'
+require 'earth/hospitality/commercial_building_energy_consumption_survey_response'
+require 'earth/residence/residential_energy_consumption_survey_response'
 
 class PetBlue < ActiveRecord::Base
   data_miner do

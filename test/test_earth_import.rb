@@ -1,10 +1,12 @@
 # -*- encoding: utf-8 -*-
 require 'helper'
 init_database
-require 'earth'
 
 # use earth, which has a plethora of real-world data_miner blocks
-Earth.init :locality, :pet, :load_data_miner => true, :apply_schemas => true
+require 'earth'
+require 'earth/locality/country'
+require 'earth/pet/breed'
+require 'earth/pet/species'
 
 describe DataMiner do
   describe "being used by the Earth library's import steps" do
